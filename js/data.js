@@ -20,12 +20,12 @@ const ENEMIES={
   bomber :{nama:'Radikalisme',   info:'Meledak saat dekat. Tembak sebelum menyentuh pasukan!',       hp:24, spd:3.2,dmg:8,r:.5, size:1.05,coin:3, skin:'#d98b6a',shirt:'#b32b2b',hat:'bomb', boom:1}
 };
 /* kenop penyetelan keseimbangan */
-const TUNE={ramp:0.085,prog:0.45,bossHp:620,bossRamp:0.3,startRamp:2.2};
+const TUNE={ramp:0.06,prog:0.35,bossHp:620,bossRamp:0.3,startRamp:1.0,startBase:9,cap:60,gap:0.02,maxShow:28,rbE:140,rbB:110,warm:0.55};
 /* tingkat kesulitan. hp/cnt/dmg = musuh; gain = jumlah prajurit yang didapat dari gerbang dan tong */
 const DIFFS={
-  sedang    :{id:'sedang',    nama:'Sedang',    info:'Untuk latihan. Musuh biasa, rezeki prajurit cukup.',                      hp:0.85,cnt:0.9, dmg:0.9, gain:1.0, spd:1.0,  boss:1.0, bad:0.08, coin:1.0, bottle:1.0, startN:0},
-  susah     :{id:'susah',     nama:'Susah',     info:'Musuh lebih tebal dan banyak. Salah ambil gerbang langsung terasa.',      hp:1.15,cnt:1.12,dmg:1.12,gain:0.94,spd:1.06, boss:1.25, bad:0.16, coin:1.5, bottle:1.2, startN:-1},
-  nightmare :{id:'nightmare', nama:'Nightmare', info:'Hampir tanpa ampun. Setiap prajurit berharga, setiap peluru harus kena.', hp:1.4, cnt:1.2, dmg:1.35,gain:0.82,spd:1.12, boss:1.7, bad:0.26, coin:2.2, bottle:1.45,startN:-2}
+  sedang    :{id:'sedang',    nama:'Sedang',    info:'Untuk latihan. Musuh biasa, rezeki prajurit cukup.',                      hp:0.8, cnt:0.85,dmg:0.85,gain:1.0, spd:1.0,  boss:1.0, bad:0.08, coin:1.0, bottle:1.0, startN:0},
+  susah     :{id:'susah',     nama:'Susah',     info:'Musuh lebih tebal dan banyak. Salah ambil gerbang langsung terasa.',      hp:1.0, cnt:1.0, dmg:1.0, gain:0.95,spd:1.03, boss:1.15,bad:0.16, coin:1.5, bottle:1.1, startN:-1},
+  nightmare :{id:'nightmare', nama:'Nightmare', info:'Hampir tanpa ampun. Setiap prajurit berharga, setiap peluru harus kena.', hp:1.3, cnt:1.15,dmg:1.3, gain:0.85,spd:1.1,  boss:1.5, bad:0.26, coin:2.2, bottle:1.3, startN:-2}
 };
 const BOSSES=[
   {nama:'Beruang Konflik Massal', body:'#8e93a6', belly:'#c9cddb', accent:'#ff4a4a', eye:'#ff3030'},

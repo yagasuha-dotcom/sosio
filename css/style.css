@@ -8,7 +8,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 /* jeda */
 #hud button{position:absolute;top:calc(env(safe-area-inset-top) + 8px);right:10px;width:36px;height:36px;border-radius:50%;border:1.5px solid rgba(150,190,255,.4);background:rgba(7,15,42,.72);display:flex;gap:5px;align-items:center;justify-content:center;padding:0}
 #hud button i{width:4px;height:14px;border-radius:2px;background:#fff}
-#toast{position:absolute;left:50%;top:21%;transform:translateX(-50%) translateY(-6px);max-width:86%;padding:8px 14px;border-radius:12px;background:rgba(7,15,42,.9);border:1px solid var(--line);font-size:13px;line-height:1.35;text-align:center;opacity:0;pointer-events:none;transition:.25s}
+#toast{position:absolute;left:50%;top:15%;transform:translateX(-50%) translateY(-6px);max-width:80%;padding:6px 12px;border-radius:12px;background:rgba(7,15,42,.82);border:1px solid var(--line);font-size:12px;line-height:1.35;text-align:center;opacity:0;pointer-events:none;transition:.25s}
 #toast.on{opacity:1;transform:translateX(-50%)}
 /* layar */
 .screen{position:absolute;inset:0;display:flex;flex-direction:column;padding:calc(env(safe-area-inset-top) + 10px) 14px 14px;overflow-y:auto;touch-action:pan-y;

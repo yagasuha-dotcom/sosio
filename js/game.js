@@ -44,7 +44,7 @@ class Game{
     const st=STAGES[si],S=this.save,up=S.upg,D=this.diff=DIFFS[S.diff]||DIFFS.susah;
     this.si=si;this.st=st;this.hero=HEROES.find(h=>h.id===S.hero)||HEROES[0];
     this.cam=0;this.t=0;this.speed=5.5;
-    this.n0=this.n=Math.max(6,10+Math.floor(si*TUNE.startRamp)+(this.hero.startBonus||0)+2*(up.start||0)+D.startN);
+    this.n0=this.n=Math.max(4,TUNE.startBase+Math.floor(si*TUNE.startRamp)+(this.hero.startBonus||0)+(up.start||0)+D.startN);
     this.sqx=0;this.targetX=0;
     this.wi=Math.min(WEAPONS.length-1,Math.min(2,Math.floor(si/3))+(up.wpn||0));
     this.dmgMul=1+0.08*(up.dmg||0);
@@ -81,29 +81,33 @@ class Game{
     this.enemies.push({k:'e',id:this.mkId(),type,x,z,hp,max:hp,ph:this.rnd()*6,flash:0,on:false,fire:1+this.rnd()*2,r:T.r,zx:this.rnd()*6});
   }
   horde(z,cnt,prog){
-    const sc=this.enemyScale(prog),m=Math.max(1,Math.round(cnt*this.diff.cnt));
+    const sc=this.enemyScale(prog),warm=TUNE.warm+(1-TUNE.warm)*Math.min(1,prog*2),m=Math.max(1,Math.round(cnt*this.diff.cnt*warm));
     for(let i=0;i<m;i++)this.addEnemy(this.pickEnemy(prog),(this.rnd()*2-1)*2.7,z+this.rnd()*7,sc);
   }
   build(){
-    const st=this.st,every=this.si<3?8:7;let z=16;
+    const st=this.st,every=this.si<3?8:7,D=this.diff;let z=16,since=0;
+    // jarak antar baris menyempit: waktu bereaksi makin singkat
+    const gap=RS*Math.max(0.68,1-TUNE.gap*this.si)*(D.id==='nightmare'?0.9:D.id==='susah'?0.96:1);
     for(let i=0;i<st.rows;i++){
-      const prog=i/st.rows;z+=RS;
+      const prog=i/st.rows;z+=gap;
       if(i===0)this.rowBarrels(z,prog,false);
       else if(i===1)this.rowGates(z,prog);
-      else if(i%every===every-1)this.rowBottle(z,prog);
-      else this.rowRandom(z,prog);
+      else if(i%every===every-1){this.rowBottle(z,prog);since=0;}
+      else if(since>=4){this.rowRest(z,prog);since=0;}
+      else{this.rowRandom(z,prog);since++;}
     }
     this.bossZ=z+22;
     const hp=Math.round(TUNE.bossHp*(1+TUNE.bossRamp*this.si)*this.diff.boss);
     this.boss={k:'boss',id:this.mkId(),kind:st.boss,x:0,z:this.bossZ,hp,max:hp,on:false,r:1.6,flash:0,tFire:2,tSum:5,dead:false};
   }
+  rowRest(z,prog){if(this.rnd()<0.6)this.rowBarrels(z,prog,false);else this.rowGates(z,prog);}
   rowRandom(z,prog){
     const r=this.rnd()*100,si=this.si;
     if(r<20)this.rowGates(z,prog);
     else if(r<48)this.horde(z,4+Math.floor(this.rnd()*3)+Math.floor(si*0.8),prog);
     else if(r<58)this.rowBarrels(z,prog,false);
     else if(r<66)this.rowBarrels(z,prog,true);
-    else if(r<71)this.rowCage(z,prog);
+    else if(r<71){if(prog<0.3||si<1)this.horde(z,4+Math.floor(si*0.8),prog);else this.rowCage(z,prog);}
     else if(r<77)this.rowCrate(z,prog);
     else if(r<85)this.rowElite(z,prog);
     else if(r<91)this.rowSpikes(z,prog);
@@ -176,6 +180,10 @@ class Game{
     this.horde(z+3,5+Math.floor(this.si*0.8),prog);
   }
 
+  /* tambahan prajurit mengecil saat pasukan sudah besar, supaya tidak menggunung */
+  gainMul(){return clamp(1-(this.n-this.n0*1.2)/TUNE.cap,0.3,1);}
+  addN(v){const r=Math.max(1,Math.round(v*this.gainMul()));this.n+=r;return r;}
+
   /* ---------- efek ---------- */
   halfW(){return clamp(0.5+Math.sqrt(this.n)*0.12,0.6,1.6);}
   text(x,z,s,col,size){this.texts.push({x,z,y:1.2,s,col:col||'#fff',life:1.1,size:size||1});}
@@ -217,7 +225,7 @@ class Game{
     this.fireT-=dt;
     if(this.fireT>0)return;
     this.fireT=1/rate;
-    const nb=Math.min(1+Math.floor(this.n/5),10),dm=this.dmgMul*(this.buffs.quad>0?2:1);
+    const nb=Math.min(1+Math.floor(this.n/8),7),dm=this.dmgMul*(this.buffs.quad>0?2:1);
     const dmg=w.dmg*dm*Math.max(1,this.n)/nb*DMG_K,hw=Math.min(this.halfW(),1.4);
     for(let j=0;j<nb;j++){
       const o=(j-(nb-1)/2),lx=nb>1?o*(hw*2/(nb-1)):0;
@@ -229,7 +237,7 @@ class Game{
     const dmgBase=14*(1+0.25*this.si);
     for(const a of this.allies){
       a.t+=dt;
-      if(a.type==='medic'&&a.t>3.5){a.t=0;this.n+=1;this.text(this.sqx+a.off,this.cam+1,'+1','#7dffa8');}
+      if(a.type==='medic'&&a.t>4.5){a.t=0;this.n+=1;this.text(this.sqx+a.off,this.cam+1,'+1','#7dffa8');}
       else if(a.type==='sniper'&&a.t>1.3){a.t=0;this.bul.push({x:this.sqx+a.off,pz:this.cam,z:this.cam,vx:0,vz:34,dmg:dmgBase*this.dmgMul,pierce:99,col:'#ff5757',hot:'#fff',hit:{},big:true,beam:true});Snd.shoot('rail');}
       else if(a.type==='drone'&&a.t>0.5){
         a.t=0;let best=null,bd=99;
@@ -271,8 +279,8 @@ class Game{
     this.ebul=this.ebul.filter(b=>!b.dead&&b.z-this.cam>-2);
   }
   /* penyesuaian halus: bila pasukan jauh lebih besar dari awal, musuh ikut menebal */
-  rb(m){return clamp(1+(this.n-this.n0)/m,1,m>=200?2.4:3);}
-  scaleUp(e){if(e.scaled)return;e.scaled=true;e.hp=Math.round(e.hp*this.rb(150));e.max=e.hp;}
+  rb(m){return clamp(1+(this.n-this.n0)/m,1,3);}
+  scaleUp(e){if(e.scaled)return;e.scaled=true;e.hp=Math.round(e.hp*this.rb(TUNE.rbE));e.max=e.hp;}
   seenFirst(type){
     if(this.seenEnemy[type])return;this.seenEnemy[type]=1;
     const T=ENEMIES[type],S=this.save;
@@ -282,7 +290,7 @@ class Game{
     const b=this.boss;if(!b||b.dead)return;
     b.flash=Math.max(0,b.flash-dt);
     const d=b.z-this.cam,D=this.diff;
-    if(!b.on){if(d<42){b.on=true;b.hp=b.max=Math.round(b.max*this.rb(110));if(this.ui)this.ui.toast('BOS: '+BOSSES[b.kind].nama+'!',3000);Snd.roar();this.shake=.5;}else return;}
+    if(!b.on){if(d<42){b.on=true;b.hp=b.max=Math.round(b.max*this.rb(TUNE.rbB));if(this.ui)this.ui.toast('BOS: '+BOSSES[b.kind].nama+'!',3000);Snd.roar();this.shake=.5;}else return;}
     const slow=this.buffs.freeze>0?0.4:1;
     if(d>13)b.z-=2.2*dt*slow;else b.z=this.cam+13;
     b.x=Math.sin(this.t*0.9)*1.8;
@@ -297,7 +305,8 @@ class Game{
         o.used=true;
         if(Math.abs(this.sqx-o.x)<=o.w/2+0.15){
           const old=this.n;
-          if(o.op==='x')this.n=Math.min(Math.ceil(this.n*o.val),this.n+30);
+          if(o.op==='x')this.n=Math.min(Math.ceil(this.n*o.val),this.n+Math.round(30*this.gainMul()));
+          else if(o.val>0)this.n+=Math.max(1,Math.round(o.val*this.gainMul()));
           else this.n=Math.max(1,this.n+o.val);
           const dlt=this.n-old;
           this.text(this.sqx,this.cam+1.4,(dlt>=0?'+':'')+dlt,dlt>=0?'#7dc4ff':'#ff6b6b',1.4);
@@ -340,7 +349,7 @@ class Game{
     else if(u==='haste'){this.buffs.haste=8;Snd.power();}
     else if(u==='quad'){this.buffs.quad=8;Snd.power();}
     else if(u==='freeze'){this.buffs.freeze=6+(this.hero.freezeBonus||0);Snd.freeze();}
-    else if(u==='heal'){this.n+=Math.max(3,Math.round(8*this.diff.gain));Snd.heal();}
+    else if(u==='heal'){this.addN(Math.max(3,Math.round(8*this.diff.gain)));Snd.heal();}
     else if(u==='coin'){this.coins+=40;Snd.coin();}
     else if(u==='nuke'){
       Snd.boom(true);this.shake=0.6;this.ring(this.sqx,this.cam+8,'#fff2b0');
@@ -370,8 +379,8 @@ class Game{
   }
   allyJoin(type){
     const A=ALLIES[type];
-    if(this.allies.find(a=>a.type===type)){this.n+=4;this.text(this.sqx,this.cam+1.4,'+4 (duplikat)','#7dffa8');Snd.ally();return;}
-    if(this.allies.length>=4)this.allies.shift();
+    if(this.allies.find(a=>a.type===type)){this.addN(4);this.text(this.sqx,this.cam+1.4,'+4 (duplikat)','#7dffa8');Snd.ally();return;}
+    if(this.allies.length>=3)this.allies.shift();
     this.allies.push({type,t:0,off:0});
     this.allies.forEach((a,i)=>{a.off=[-1.5,1.5,-2.3,2.3][i];});
     if(type==='heavy')this.dmgMul+=0.25;
@@ -414,7 +423,7 @@ class Game{
   breakObj(t){
     t.dead=true;
     if(t.k==='barrel'){
-      this.n+=t.give;this.text(t.x,t.z,'+'+t.give,'#7dc4ff',1.4);
+      {const r=this.addN(t.give);this.text(t.x,t.z,'+'+r,'#7dc4ff',1.4);}
       this.fx('wood',t.x,t.z,1,'#c8742a',14,6,.16);this.fx('puff',t.x,t.z,.8,'rgba(255,200,120,.7)',4,3,.25);Snd.barrel();
     }else if(t.k==='bottle'){
       this.fx('glass',t.x,t.z,1,'rgba(150,215,255,.9)',22,8,.16);this.fx('spark',t.x,t.z,1,'#d8f2ff',14,7);this.ring(t.x,t.z,'#8fd0ff');
@@ -458,7 +467,7 @@ class Game{
         this.right++;
         if(!maxed){this.wi++;msg='Senjata naik: '+WEAPONS[this.wi].nama+'!';}
         else{this.dmgMul+=0.15;msg='Senjata sudah maksimal. Damage +15%!';}
-        this.n+=Math.max(2,Math.round(4*this.diff.gain));this.coins+=15;Snd.correct();
+        this.addN(Math.max(2,Math.round(4*this.diff.gain)));this.coins+=15;Snd.correct();
       }else{
         this.missed.push(q.konsep);
         if(S.santai&&!maxed){this.wi++;msg='Mode santai: senjata tetap naik ke '+WEAPONS[this.wi].nama+'.';}
@@ -536,7 +545,7 @@ class Game{
     if(this.state==='play'||this.state==='quiz'||this.state==='win'||this.state==='pause')drawHud(c,this);
   }
   drawSquad(c){
-    const t=this.t,H=Proj.unit*0.92,nd=Math.min(this.n,46);
+    const t=this.t,H=Proj.unit*0.92,nd=Math.min(this.n,TUNE.maxShow);
     const cols=Math.max(2,Math.ceil(Math.sqrt(nd*1.3))),items=[];
     for(let i=0;i<nd;i++){
       const row=Math.floor(i/cols),col=i%cols;
