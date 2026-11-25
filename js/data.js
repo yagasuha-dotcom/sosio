@@ -1,24 +1,34 @@
-/* ================= DATA GAME: senjata, musuh, aliansi, utility, pahlawan, level, toko ================= */
+/* ================= DATA GAME ================= */
+/* dps per prajurit = dmg x rate. Tiap tingkat naik pelan, bukan loncat. */
 const WEAPONS=[
-  {id:'pistol', nama:'Pistol Dasar',        dmg:1.0, rate:3.2, spread:0,    pierce:0,  col:'#5ad1ff', gun:{len:.7,mag:.22,stock:0}},
-  {id:'smg',    nama:'SMG Kolaborasi',      dmg:1.1, rate:5.6, spread:0.05, pierce:0,  col:'#4ee0c0', gun:{len:.8,mag:.3,stock:.15}},
-  {id:'ak',     nama:'AK Solidaritas',      dmg:1.8, rate:5.0, spread:0.04, pierce:0,  col:'#ffd24a', gun:{len:1.0,mag:.35,stock:.3}},
-  {id:'shotgun',nama:'Shotgun Dialog',      dmg:1.5, rate:2.4, spread:0.55, pierce:0,  col:'#ff9a2e', gun:{len:1.0,mag:.12,stock:.35}},
-  {id:'minigun',nama:'Minigun Integrasi',   dmg:1.5, rate:11,  spread:0.08, pierce:0,  col:'#ff6b6b', gun:{len:1.15,mag:.4,stock:.1,barrels:3}},
-  {id:'plasma', nama:'Plasma Bhinneka',     dmg:4.2, rate:3.2, spread:0.02, pierce:2,  col:'#c27bff', gun:{len:1.1,mag:.3,stock:.2,glow:1}},
-  {id:'rail',   nama:'Railgun Reformasi',   dmg:15,  rate:1.5, spread:0,    pierce:99, col:'#fff06a', gun:{len:1.3,mag:.25,stock:.3,glow:1}}
+  {id:'pistol', nama:'Pistol Dasar',        dmg:1.0, rate:3.2, spread:0,    pierce:0,  col:'#6fd6ff', hot:'#e6faff', len:.7},
+  {id:'smg',    nama:'SMG Kolaborasi',      dmg:0.95,rate:5.8, spread:0.06, pierce:0,  col:'#5df0cf', hot:'#e8fff8', len:.8},
+  {id:'ak',     nama:'AK Solidaritas',      dmg:1.75,rate:4.6, spread:0.045,pierce:0,  col:'#ffd34d', hot:'#fff6cf', len:1.0},
+  {id:'shotgun',nama:'Shotgun Dialog',      dmg:1.25,rate:2.3, spread:0.6,  pierce:0,  col:'#ff9f3a', hot:'#ffe9c9', len:1.0, pellets:1},
+  {id:'minigun',nama:'Minigun Integrasi',   dmg:1.1, rate:11,  spread:0.09, pierce:0,  col:'#ff6b6b', hot:'#ffe1e1', len:1.15},
+  {id:'plasma', nama:'Plasma Bhinneka',     dmg:3.6, rate:3.4, spread:0.02, pierce:2,  col:'#c98bff', hot:'#f4e6ff', len:1.1},
+  {id:'rail',   nama:'Railgun Reformasi',   dmg:11,  rate:1.6, spread:0,    pierce:99, col:'#fff27a', hot:'#ffffff', len:1.3}
 ];
+/* hp dasar sudah cukup tebal; dikali tingkat kesulitan dan level */
 const ENEMIES={
-  walker :{nama:'Stereotip',     info:'Penilaian sempit terhadap kelompok lain. Lemah tapi banyak.', hp:6,  spd:2.4,dmg:1,r:.45,size:1,  coin:1, skin:'#7fbf6a',shirt:'#8a5a44',hat:'none'},
-  runner :{nama:'Hoaks Viral',   info:'Berita bohong menyebar cepat! Larinya kencang.',              hp:4,  spd:4.4,dmg:1,r:.4, size:.9, coin:1, skin:'#9ad07a',shirt:'#d9822b',hat:'hair'},
-  helmet :{nama:'Prasangka',     info:'Berlindung di balik helm kepala batu.',                       hp:13, spd:2.0,dmg:1,r:.5, size:1.05,coin:2, skin:'#6fae8a',shirt:'#5d6b53',hat:'helmet'},
-  ghoul  :{nama:'Disinformasi',  info:'Bergerak zig-zag, sulit ditebak.',                            hp:9,  spd:2.8,dmg:1,r:.45,size:1,  coin:2, skin:'#b6a3d9',shirt:'#4a3d73',hat:'hood', zig:1},
-  brute  :{nama:'Diskriminasi',  info:'Besar dan keras kepala. Sekali kena, banyak yang tumbang.',   hp:48, spd:1.5,dmg:6,r:.95,size:1.8,coin:6, skin:'#8aa86a',shirt:'#7a2f2f',hat:'bandana'},
-  spitter:{nama:'Provokator',    info:'Memicu masalah dari jauh dengan lendir kebencian.',           hp:15, spd:1.4,dmg:2,r:.5, size:1.1,coin:3, skin:'#c7d85a',shirt:'#3f6b3a',hat:'none', ranged:1},
-  bomber :{nama:'Radikalisme',   info:'Meledak saat dekat. Tembak sebelum menyentuh pasukan!',       hp:11, spd:3.0,dmg:5,r:.5, size:1.05,coin:3, skin:'#d98b6a',shirt:'#b32b2b',hat:'bomb', boom:1}
+  walker :{nama:'Stereotip',     info:'Penilaian sempit terhadap kelompok lain. Lemah tapi banyak.', hp:14, spd:2.5,dmg:2,r:.45,size:.92,  coin:1, skin:'#86b778',shirt:'#8a5a44',hat:'none'},
+  runner :{nama:'Hoaks Viral',   info:'Berita bohong menyebar cepat! Larinya kencang.',              hp:9,  spd:4.6,dmg:2,r:.4, size:.9,coin:1, skin:'#9ad07a',shirt:'#d9822b',hat:'hair'},
+  helmet :{nama:'Prasangka',     info:'Berlindung di balik helm kepala batu.',                       hp:30, spd:2.1,dmg:3,r:.5, size:1.1,coin:2, skin:'#6fae8a',shirt:'#5d6b53',hat:'helmet'},
+  ghoul  :{nama:'Disinformasi',  info:'Bergerak zig-zag, sulit ditebak.',                            hp:20, spd:3.0,dmg:2,r:.45,size:1.08,  coin:2, skin:'#b6a3d9',shirt:'#4a3d73',hat:'hood', zig:1},
+  brute  :{nama:'Diskriminasi',  info:'Besar dan keras kepala. Sekali kena, banyak yang tumbang.',   hp:140,spd:1.6,dmg:9,r:.95,size:1.75,coin:6, skin:'#8aa86a',shirt:'#7a2f2f',hat:'bandana'},
+  spitter:{nama:'Provokator',    info:'Memicu masalah dari jauh dengan lendir kebencian.',           hp:34, spd:1.4,dmg:3,r:.5, size:.95,coin:3, skin:'#c7d85a',shirt:'#3f6b3a',hat:'none', ranged:1},
+  bomber :{nama:'Radikalisme',   info:'Meledak saat dekat. Tembak sebelum menyentuh pasukan!',       hp:24, spd:3.2,dmg:8,r:.5, size:.95,coin:3, skin:'#d98b6a',shirt:'#b32b2b',hat:'bomb', boom:1}
+};
+/* kenop penyetelan keseimbangan */
+const TUNE={ramp:0.06,prog:0.35,bossHp:620,bossRamp:0.3,startRamp:1.0,startBase:9,cap:60,gap:0.02,maxShow:28,rbE:140,rbB:110,warm:0.55};
+/* tingkat kesulitan. hp/cnt/dmg = musuh; gain = jumlah prajurit yang didapat dari gerbang dan tong */
+const DIFFS={
+  sedang    :{id:'sedang',    nama:'Sedang',    info:'Untuk latihan. Musuh biasa, rezeki prajurit cukup.',                      hp:0.8, cnt:0.85,dmg:0.85,gain:1.0, spd:1.0,  boss:1.0, bad:0.08, coin:1.0, bottle:1.0, startN:0},
+  susah     :{id:'susah',     nama:'Susah',     info:'Musuh lebih tebal dan banyak. Salah ambil gerbang langsung terasa.',      hp:1.0, cnt:1.0, dmg:1.0, gain:0.95,spd:1.03, boss:1.15,bad:0.16, coin:1.5, bottle:1.1, startN:-1},
+  nightmare :{id:'nightmare', nama:'Nightmare', info:'Hampir tanpa ampun. Setiap prajurit berharga, setiap peluru harus kena.', hp:1.3, cnt:1.15,dmg:1.3, gain:0.85,spd:1.1,  boss:1.5, bad:0.26, coin:2.2, bottle:1.3, startN:-2}
 };
 const BOSSES=[
-  {nama:'Beruang Konflik Massal', body:'#8e93a6', belly:'#c9cddb', accent:'#ff4a4a', eye:'#ff3030'},
+  {nama:'Badak Batu Konflik Massal', body:'#7a6f9a', belly:'#b8aed6', accent:'#ff5a3a', eye:'#ff3030'},
   {nama:'Golem Ketimpangan',      body:'#8b7a66', belly:'#b9a68c', accent:'#ffb02e', eye:'#ffd24a'},
   {nama:'Raja Hoaks',             body:'#7b4fb8', belly:'#b995ee', accent:'#6fffd0', eye:'#6fffd0'},
   {nama:'Naga Intoleransi',       body:'#b8453a', belly:'#f0a07a', accent:'#ffe36b', eye:'#fff06a'}
@@ -32,13 +42,13 @@ const ALLIES={
   jurnalis:{nama:'Jurnalis Investigatif', info:'Koin hasil level +25%',                    helm:'#8a5be6',ex:'cam'}
 };
 const UTILS={
-  shield:{nama:'Perisai Norma',    ico:'🛡️',info:'Menahan 3 serangan'},
-  haste :{nama:'Kolaborasi',       ico:'⚡',info:'Tembakan 70% lebih cepat (8 dtk)'},
-  quad  :{nama:'Inovasi',          ico:'🔥',info:'Damage x2 (8 dtk)'},
-  nuke  :{nama:'Reformasi',        ico:'💥',info:'Ledakan besar membersihkan musuh'},
-  freeze:{nama:'Dialog Terbuka',   ico:'❄️',info:'Semua musuh melambat (6 dtk)'},
-  heal  :{nama:'Solidaritas',      ico:'💚',info:'+8 prajurit'},
-  coin  :{nama:'Beasiswa',         ico:'🪙',info:'+40 koin'}
+  shield:{nama:'Perisai Norma',    ico:'shield',info:'Menahan 3 serangan'},
+  haste :{nama:'Kolaborasi',       ico:'bolt',info:'Tembakan 70% lebih cepat (8 dtk)'},
+  quad  :{nama:'Inovasi',          ico:'flame',info:'Damage x2 (8 dtk)'},
+  nuke  :{nama:'Reformasi',        ico:'burst',info:'Ledakan besar membersihkan musuh'},
+  freeze:{nama:'Dialog Terbuka',   ico:'snow',info:'Semua musuh melambat (6 dtk)'},
+  heal  :{nama:'Solidaritas',      ico:'heart',info:'+8 prajurit'},
+  coin  :{nama:'Beasiswa',         ico:'coin',info:'+40 koin'}
 };
 const HEROES=[
   {id:'komandan',nama:'Komandan Sari',   cost:0,   info:'Pemimpin motor tangguh. Mulai dengan +3 prajurit.', startBonus:3, hair:'#f2c75a',jacket:'#6b7f3a',beret:'#1d1d24'},
